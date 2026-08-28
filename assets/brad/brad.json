@@ -1,0 +1,42 @@
+{
+  "fichier": "brad.png",
+  "cellule": {
+    "w": 36,
+    "h": 48
+  },
+  "colonnes": 4,
+  "lignes": 3,
+  "hauteurPersonnage": 46,
+  "animations": {
+    "repos": {
+      "ligne": 0,
+      "images": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "duree": 0.22
+    },
+    "marche": {
+      "ligne": 1,
+      "images": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "duree": 0.13
+    },
+    "course": {
+      "ligne": 2,
+      "images": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "duree": 0.09
+    }
+  }
+}

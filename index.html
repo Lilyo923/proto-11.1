@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Brad Bitt, mais le jeu — Prototype 10</title>
+<link rel="icon" href="assets/ui/favicon.png" type="image/png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="scene">
+  <canvas id="jeu" width="640" height="360"></canvas>
+
+  <!-- Commandes tactiles. Icônes SVG et non émojis : un émoji change de dessin
+       d'un appareil à l'autre, arrive parfois en couleur, et ne s'aligne pas
+       de la même façon. Le tracé vectoriel, lui, est identique partout. -->
+  <div id="tactile" hidden>
+    <div class="pad">
+      <button class="tbtn" data-touche="gauche" aria-label="Aller à gauche">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 L7 12 L15 20 Z"/></svg>
+      </button>
+      <button class="tbtn" data-touche="droite" aria-label="Aller à droite">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 L17 12 L9 20 Z"/></svg>
+      </button>
+    </div>
+    <div class="pad droite">
+      <button class="tbtn" data-touche="onde" aria-label="Onde de choc Brad-Shy">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="2.8"/>
+          <path d="M6.6 6.6 a7.6 7.6 0 0 0 0 10.8" fill="none" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M17.4 6.6 a7.6 7.6 0 0 1 0 10.8" fill="none" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M3 3 a12.7 12.7 0 0 0 0 18" fill="none" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+          <path d="M21 3 a12.7 12.7 0 0 1 0 18" fill="none" stroke-width="1.8" stroke-linecap="round" opacity=".55"/>
+        </svg>
+      </button>
+      <button class="tbtn" data-touche="attaque" aria-label="Frapper">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="9" y="8.5" width="11" height="9" rx="2.6"/>
+          <rect x="10.6" y="6.4" width="2.6" height="2.8" rx="1.2"/>
+          <rect x="14.1" y="6.4" width="2.6" height="2.8" rx="1.2"/>
+          <rect x="17.6" y="6.4" width="2.4" height="2.8" rx="1.2"/>
+          <rect x="2" y="9.6" width="5.4" height="1.9" rx="0.95"/>
+          <rect x="3.6" y="14" width="4" height="1.9" rx="0.95"/>
+        </svg>
+      </button>
+      <button class="tbtn saut" data-touche="saut" aria-label="Sauter">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3 L20 12 L15 12 L15 20 L9 20 L9 12 L4 12 Z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Demande de rotation, affichée sur appareil tactile en portrait -->
+  <div id="rotation" hidden>
+    <svg viewBox="0 0 64 64" aria-hidden="true">
+      <rect x="21" y="6" width="22" height="38" rx="3" fill="none" stroke-width="3"/>
+      <path d="M14 50 a18 18 0 0 0 36 0" fill="none" stroke-width="3" stroke-linecap="round"/>
+      <path d="M50 50 l-5 -6 M50 50 l6 -4" fill="none" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <p>Tourne ton téléphone</p>
+    <span>Brad Bitt se joue en mode paysage.</span>
+  </div>
+</div>
+
+<button id="ouvrir-reglages" title="Réglages (F1)">⚙ Réglages</button>
+
+<aside id="reglages" hidden>
+  <header>
+    <h1>Réglages</h1>
+    <button id="fermer-reglages" aria-label="Fermer">✕</button>
+  </header>
+
+  <p class="aide">
+    Modifie les valeurs pendant que tu joues. Elles sont mémorisées dans ce
+    navigateur.
+  </p>
+
+  <div id="curseurs"></div>
+
+  <section class="actions">
+    <button id="reinit">Valeurs par défaut</button>
+    <button id="exporter">Copier le réglage</button>
+  </section>
+  <section class="actions">
+    <button id="relancer">Relancer le niveau</button>
+    <button id="aller-menu">Menu principal</button>
+  </section>
+
+  <section class="bascules">
+    <label><input type="checkbox" id="opt-double-saut"> Double saut (débloquable plus tard)</label>
+    <label><input type="checkbox" id="opt-saut-ennemi"> Les coureurs franchissent les trous</label>
+    <label><input type="checkbox" id="opt-hitbox"> Afficher les boîtes de collision</label>
+    <label><input type="checkbox" id="opt-traces"> Afficher la trace de saut</label>
+  </section>
+
+  <section class="aide">
+    <strong>Commandes</strong><br>
+    Déplacement : ← → &nbsp;/&nbsp; A D &nbsp;/&nbsp; Q D<br>
+    Saut : Espace &nbsp;/&nbsp; ↑ &nbsp;/&nbsp; W &nbsp;/&nbsp; Z (maintenir = plus haut)<br>
+    Courir : Maj &nbsp;·&nbsp; Frapper / lancer : X &nbsp;·&nbsp; Brad-Shy : C<br>
+    Parler au BRADDY3000 : E &nbsp;·&nbsp; Entrer dans un poste : Espace<br>
+    Retour au début : R &nbsp;·&nbsp; Menu : Échap &nbsp;·&nbsp; Réglages : F1<br>
+    <em>Une chute te remet au dernier sol stable, pas au début.</em>
+  </section>
+</aside>
+
+<!-- Scripts classiques, sans modules ES : la page reste ouvrable par simple
+     double-clic (file://), où les modules et fetch() sont bloqués. L'ordre
+     compte, chaque fichier s'appuyant sur les constantes du précédent. -->
+<script src="js/reglages.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/monde.js"></script>
+
+<!-- Les niveaux : un fichier de données par niveau, comme le prévoient les
+     notes. Ils s'enregistrent dans NIVEAUX et doivent être chargés avant la
+     sauvegarde (qui valide les niveaux terminés) et avant le jeu. -->
+<script src="niveaux/intro.js"></script>
+<script src="niveaux/niveau1.js"></script>
+<script src="niveaux/niveau2.js"></script>
+<script src="niveaux/niveau3.js"></script>
+<script src="niveaux/entrainement.js"></script>
+
+<!-- jukebox.js AVANT sauvegarde.js : la relecture de la partie valide le
+     morceau choisi et les codes deja entres contre PISTES_JUKEBOX, et
+     chargerPartie() s'execute des la fin de sauvegarde.js. -->
+<script src="js/jukebox.js"></script>
+<script src="js/sauvegarde.js"></script>
+<script src="js/acteurs.js"></script>
+<script src="js/boss.js"></script>
+<script src="js/mobiles.js"></script>
+<script src="js/dialogue.js"></script>
+<script src="js/hub.js"></script>
+<script src="js/arcade.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/pause.js"></script>
+<script src="js/entrees.js"></script>
+<script src="js/jeu.js"></script>
+</body>
+</html>

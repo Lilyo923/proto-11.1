@@ -1,0 +1,308 @@
+/* Brad Bitt, mais le jeu — feuille de style du prototype */
+
+:root {
+  --fond: #0d0f18;
+  --panneau: #171a26;
+  --bord: #2a2f42;
+  --texte: #e6e8f0;
+  --sourdine: #8d93ab;
+  --accent: #e8b62c;   /* le jaune du Serrano */
+  --accent-2: #d0453f; /* la cravate de Brad */
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#scene {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+#jeu {
+  /* Le rendu interne est en 640x360 : on interdit tout lissage pour
+     conserver un vrai rendu pixel. */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: #10131f;
+  display: block;
+  box-shadow: 0 0 0 1px var(--bord), 0 24px 60px rgba(0, 0, 0, .6);
+}
+
+/* ---------- Bouton d'ouverture des reglages ---------- */
+
+#ouvrir-reglages {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 20;
+  padding: 8px 14px;
+  border: 1px solid var(--bord);
+  border-radius: 8px;
+  background: rgba(23, 26, 38, .9);
+  color: var(--texte);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+#ouvrir-reglages:hover { border-color: var(--accent); }
+
+/* Sur écran tactile, ce bouton de développement chevauche le compteur de
+   Brad Coins et s'atteint par erreur. Le panneau reste accessible depuis
+   Options → « Réglages de développement… ». */
+@media (pointer: coarse) {
+  #ouvrir-reglages { display: none; }
+}
+
+/* ---------- Panneau de reglages ---------- */
+
+#reglages {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 30;
+  width: 340px;
+  max-width: 100vw;
+  height: 100%;
+  padding: 16px 18px 32px;
+  overflow-y: auto;
+  background: var(--panneau);
+  border-left: 1px solid var(--bord);
+  font-size: 13px;
+}
+
+#reglages[hidden] { display: none; }
+
+#reglages header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+#reglages h1 {
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+#fermer-reglages {
+  border: 0;
+  background: none;
+  color: var(--sourdine);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.aide {
+  color: var(--sourdine);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.groupe-titre {
+  margin: 18px 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--bord);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--sourdine);
+}
+
+.curseur { margin: 10px 0; }
+
+.curseur .ligne {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+
+.curseur .nom { color: var(--texte); }
+.curseur .valeur {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+}
+.curseur .note {
+  display: block;
+  color: var(--sourdine);
+  font-size: 11px;
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+input[type="range"] {
+  width: 100%;
+  height: 4px;
+  margin: 2px 0;
+  appearance: none;
+  background: var(--bord);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--panneau);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--panneau);
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--bord);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--texte);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.actions button:hover { border-color: var(--accent); color: var(--accent); }
+
+.bascules {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+  font-size: 12px;
+  color: var(--sourdine);
+}
+
+.bascules label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+/* ---------- Commandes tactiles ---------- */
+
+#tactile {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 18px 24px;
+  pointer-events: none;
+}
+
+#tactile[hidden] { display: none; }
+
+.pad { display: flex; gap: 14px; align-items: flex-end; }
+
+.tbtn {
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 50%;
+  background: rgba(23, 26, 38, .55);
+  color: rgba(255, 255, 255, .82);
+  backdrop-filter: blur(4px);
+  touch-action: none;
+}
+
+.tbtn svg {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.tbtn.saut {
+  width: 78px;
+  height: 78px;
+  border-color: rgba(232, 182, 44, .5);
+  color: var(--accent);
+}
+
+.tbtn.saut svg { width: 34px; height: 34px; }
+
+.tbtn:active { background: rgba(232, 182, 44, .3); }
+
+/* ---------- Demande de rotation ---------- */
+
+#rotation {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 6px;
+  padding: 24px;
+  background: var(--fond);
+  text-align: center;
+}
+
+#rotation[hidden] { display: none; }
+
+#rotation svg {
+  width: 96px;
+  height: 96px;
+  stroke: var(--accent);
+  fill: none;
+  animation: bascule 2.4s ease-in-out infinite;
+}
+
+#rotation p {
+  margin: 12px 0 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--texte);
+}
+
+#rotation span {
+  font-size: 13px;
+  color: var(--sourdine);
+}
+
+@keyframes bascule {
+  0%, 45% { transform: rotate(0deg); }
+  70%, 100% { transform: rotate(-90deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #rotation svg { animation: none; transform: rotate(-90deg); }
+}
+
+@media (max-width: 720px) {
+  #reglages { width: 100%; }
+}
